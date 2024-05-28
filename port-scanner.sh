@@ -1,12 +1,40 @@
-#!/bin/bash
+#! /bin/python3
 
-if ["$1" == ""]
-then
-echo "You forgot to enter the IP Address"
-echo "Syntax: ./port-scanner.sh 192.168.4"
+import sys
+import socket
+from datetime import datetime
 
-else
-for ip in `seq 1 254` ; do
-ping -c 1 $1.$pip | grep "64 bytes" | cut -d " " -f 4 | tr -d ":" &
-done
-fi
+if len(sys.argv) == 2:
+	target = socket.gethostbyname(sys.argv[1])
+else:
+	print("INvalid input")
+
+print("-" * 50)
+print("Scanning target: " + target)
+print("Starting Time: " + str(datetime.now()))
+print("-" * 50)
+
+try:
+	for port in range(50,85):
+		s = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+		socket.setdefaulttimeout(1)
+		result = s.connect_ex((target , port)) # Error indicator
+	
+		if result ==0:
+			print("port " + str(port) + " is open")
+		else:
+			print("port " + str(port) + " is closed")
+		s.close()
+	
+	
+except KeyboardInterrupt:
+	print("\n Exiting program. THanks for using Optimus port_scanner")
+	sys.exit()
+
+except socket.gaierror:
+	print("Hostname could not be resolved") # any thing thats not an ip address
+	sys.exit()
+	
+except socket.error:
+	print ("Could not connet to server") # serer not online
+	sys.exit()	
